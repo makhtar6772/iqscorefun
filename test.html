@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)">
+<title>Free IQ Test (20 Questions, Timed) | IQScore Fun</title>
+<meta name="description" content="Start the free 20-question IQ practice test. Number patterns, logic and verbal reasoning with instant results and explanations.">
+<link rel="canonical" href="https://iqscore.fun/test.html">
+<meta property="og:title" content="Free IQ Test (20 Questions, Timed) | IQScore Fun">
+<meta property="og:description" content="Start the free 20-question IQ practice test. Number patterns, logic and verbal reasoning with instant results and explanations.">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="style.css">
+<!-- PASTE YOUR GOOGLE ADSENSE CODE HERE (after approval) -->
+<!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+</head>
+<body>
+<header class="site"><div class="wrap">
+<a class="logo" href="index.html">IQScore <span>Fun</span></a>
+<nav><a href="test.html">Free IQ Test</a><a href="blog-what-is-iq.html">Learn</a><a href="about.html">About</a></nav>
+</div></header>
+<main><div class="wrap">
+<div id="intro" class="card center screen">
+<h1>Free IQ Test: 20 Questions, 20 Minutes</h1>
+<p><strong>20 questions</strong> &bull; <strong>20-minute</strong> timer &bull; instant result &bull; no signup</p>
+<div class="cats" style="text-align:left">
+<div><b>7</b>Math Puzzles</div>
+<div><b>7</b>Logical Reasoning</div>
+<div><b>6</b>Visual Pattern Recognition</div>
+</div>
+<p style="margin-top:20px">Question types are mixed all the way through the test. Each time you start, the questions are picked at random from a larger question bank. You can go back and change answers before you finish. When the timer reaches 0:00 the test stops and your answers are submitted automatically. Skipped questions count as incorrect. Please avoid calculators.</p>
+<button class="btn primary" onclick="startTest()">Start IQ Test</button>
+<p class="note" style="margin-top:20px">For entertainment and educational use only. Not a clinical IQ assessment.</p>
+</div>
+
+<div id="quiz" class="card hidden screen">
+<div class="topbar"><span class="chip" id="chip"></span><span class="timer" id="timer">20:00</span></div>
+<div class="meta"><span id="qnum"></span></div>
+<div class="progress"><div id="bar"></div></div>
+<div class="q" id="qtext"></div>
+<div class="seq hidden" id="seq"></div>
+<div class="opts" id="opts"></div>
+<div class="actions"><button class="btn ghost" id="prev" onclick="prev()">Back</button><button class="btn primary" id="next" onclick="next()">Next</button></div>
+<div class="dots" id="dots"></div>
+</div>
+
+<div id="result" class="hidden screen">
+<div class="card center">
+<p id="timeup" class="note hidden">Time is up! Your answers were submitted automatically.</p>
+<p class="mu" style="margin:0;font-weight:700">YOUR ESTIMATED IQ</p>
+<div class="score" id="iq">--</div>
+<h2 id="band" style="margin:10px 0 0"></h2>
+<p id="bandtext" style="margin:6px 0"></p>
+<p id="detail" class="mu"></p>
+<div class="bar"><i id="marker" style="left:0"></i></div>
+<div class="scale"><span>70</span><span>85</span><span>100</span><span>115</span><span>130</span><span>140+</span></div>
+<div class="cats" id="cats"></div>
+<h3 style="margin-top:26px">Share your score</h3>
+<div class="share">
+<a class="wa" id="sw" target="_blank" rel="noopener">WhatsApp</a>
+<a class="fb" id="sf" target="_blank" rel="noopener">Facebook</a>
+<a class="tw" id="st" target="_blank" rel="noopener">X (Twitter)</a>
+</div>
+<p class="note" style="margin-top:22px">This score is a fun estimate from a short 20-question test. Real IQ tests are longer, standardized and given by qualified professionals.</p>
+<div style="margin-top:16px"><button class="btn ghost" onclick="retake()">Retake the test</button></div>
+</div>
+<div class="ad"><!-- AD SLOT: paste your AdSense ad unit here -->Advertisement</div>
+<div class="card rev"><h2>Answer review</h2><div id="review"></div></div>
+</div>
+
+<article class="card">
+<h2>What this IQ test measures</h2>
+<p>IQScore Fun is a free 20-question reasoning test for people who enjoy puzzles. The questions come from three areas: math puzzles such as number sequences, percentages and ratios; logical reasoning such as deductions, analogies and ordering problems; and visual pattern recognition, where you work out what changes from one shape to the next. Together they sample the kinds of thinking that formal IQ assessments rely on: working with numbers, following rules and spotting structure.</p>
+<h2>How the score works</h2>
+<p>Every correct answer adds 3.25 points to a base of 70, so the estimated score runs from 70 to 135. Unanswered questions count as incorrect. Scores below 90 are labeled Developing, 90 to 109 Average, 110 to 119 Superior, 120 to 129 Very Superior, and 130 or higher Exceptional. Because the test is short, treat the number as a rough estimate. Professionally administered tests such as the Wechsler scales use many more questions, are scored against large reference groups and are given by trained examiners.</p>
+<h2>Tips for a better score</h2>
+<p>Read each question twice before answering. If one stumps you, pick your best guess and return to it later with the Back button or the question dots; you have about a minute per question. In visual puzzles, check four things in order: the shape, the count, the fill and the rotation. In number sequences, look at the differences between neighbors first, then the ratios. A good night of sleep before the test helps more than any trick. For more ideas, read our guide on <a href="blog-improve-iq.html">ways to sharpen your thinking</a>.</p>
+<h2>Frequently asked questions</h2>
+<p><strong>Is the test really free?</strong> Yes. There is nothing to buy and no account to create.</p>
+<p><strong>Are my answers stored?</strong> No. Answers stay in your browser and are not sent to our servers.</p>
+<p><strong>Can I retake it?</strong> Yes. Each attempt picks a new random set of questions from our question bank and shuffles the answer options, though some questions may repeat.</p>
+<p><strong>Is this a real IQ test?</strong> No. It is a fun, quick check of reasoning skills, not a diagnostic or clinical tool. See our <a href="disclaimer.html">disclaimer</a> and the <a href="blog-iq-score-chart.html">IQ score chart</a>.</p>
+</article>
+</div></main>
+
+<footer class="site"><div class="wrap">
+<p><a href="index.html">Home</a><a href="test.html">IQ Test</a><a href="blog-what-is-iq.html">What is IQ?</a><a href="blog-iq-score-chart.html">IQ Chart</a><a href="blog-improve-iq.html">Brain Tips</a></p>
+<p><a href="about.html">About</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms</a><a href="disclaimer.html">Disclaimer</a></p>
+<p>&copy; 2026 IQScore Fun. For entertainment and educational purposes only. Not a clinical or professional IQ assessment.</p>
+</div></footer>
+<script src="script.js"></script>
+</body>
+</html>
