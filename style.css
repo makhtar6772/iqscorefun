@@ -98,3 +98,10 @@ footer.site{background:var(--ftr);color:var(--ftrink);padding:30px 0;font-size:1
 footer.site a{color:var(--ftrink);margin-right:16px}
 .hidden{display:none}
 @media(max-width:560px){nav a{margin-left:10px;font-size:13px}.score{font-size:64px}.q{font-size:19px}.seq .box{width:60px;height:60px}.fig{width:46px;height:46px}.opts.vis .opt{padding:10px}}
+
+/* calculating page */
+.calc{padding:48px 24px}
+.calc h1{font-size:clamp(22px,5vw,30px);margin:18px 0 6px}
+.spin{width:54px;height:54px;margin:0 auto;border-radius:50%;border:5px solid var(--line);border-top-color:var(--brand);animation:spin 0.9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#calcbar{transition:width .12s linear}

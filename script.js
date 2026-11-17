@@ -138,33 +138,64 @@ function buildTest() {
   return out.map(makeQuestion);
 }
 
-/* ---------- State ---------- */
-let QUESTIONS = [], cur = 0, answers = [], endTime = 0, timer = null, finished = false;
+/* ---------- State (kept in sessionStorage so it survives page reloads between questions) ---------- */
+const KEY = "iqs_state_v1";
+const PAGE = document.body.getAttribute("data-page");
+let QUESTIONS = [], cur = 0, answers = [], endTime = 0, timer = null, finTime = 0, timeUp = false;
 const $ = id => document.getElementById(id);
 const letter = i => String.fromCharCode(65 + i);
 const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;");
 const fmt = s => Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
 
-/* ---------- Flow ---------- */
+function save() {
+  try { sessionStorage.setItem(KEY, JSON.stringify({ Q: QUESTIONS, a: answers, end: endTime, fin: finTime, tu: timeUp })); } catch (e) {}
+}
+function load() {
+  try {
+    const s = JSON.parse(sessionStorage.getItem(KEY) || "null");
+    if (s && s.Q && s.Q.length) { QUESTIONS = s.Q; answers = s.a; endTime = s.end; finTime = s.fin || 0; timeUp = !!s.tu; return true; }
+  } catch (e) {}
+  return false;
+}
+function clearState() { try { sessionStorage.removeItem(KEY); } catch (e) {} }
+function go(url) { location.href = url; }
+
+/* ---------- Test page (test.html and test.html?q=1 ... ?q=20) ---------- */
 function startTest() {
   QUESTIONS = buildTest();
   answers = new Array(QUESTIONS.length).fill(null);
-  cur = 0; finished = false;
+  endTime = Date.now() + TOTAL_SECONDS * 1000;
+  finTime = 0; timeUp = false;
+  save();
+  go("test.html?q=1");
+}
+
+function initTest() {
+  const q = parseInt(new URLSearchParams(location.search).get("q"), 10);
+  if (!q || !load() || q < 1 || q > QUESTIONS.length) {
+    if (q) { location.replace("test.html"); return; }
+    return;                                   /* no ?q= : show the intro screen */
+  }
+  cur = q - 1;
   $("intro").classList.add("hidden");
   $("quiz").classList.remove("hidden");
-  endTime = Date.now() + TOTAL_SECONDS * 1000;
   tick();
   timer = setInterval(tick, 500);
   render();
+  window.addEventListener("pageshow", e => { if (e.persisted) { load(); render(); } });   /* back/forward cache */
 }
 
 function tick() {
-  if (finished) return;
+  if (finTime) return;
   const left = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
   const t = $("timer");
   t.textContent = fmt(left);
   t.classList.toggle("warn", left <= 120);
-  if (left === 0) finish(true);
+  if (left === 0) {
+    clearInterval(timer);
+    load(); timeUp = true; save();
+    location.replace("calculating.html");
+  }
 }
 
 function render() {
@@ -190,7 +221,7 @@ function render() {
     b.className = "opt" + (answers[cur] === i ? " sel" : "");
     b.setAttribute("aria-label", "Option " + letter(i));
     b.innerHTML = '<span class="l">' + letter(i) + "</span>" + (item.v ? fig(x) : "<span>" + esc(x) + "</span>");
-    b.onclick = () => { answers[cur] = i; render(); };
+    b.onclick = () => { load(); answers[cur] = i; save(); render(); };
     box.appendChild(b);
   });
 
@@ -203,16 +234,17 @@ function render() {
     const d = document.createElement("i");
     d.className = (answers[i] !== null ? "done " : "") + (i === cur ? "now" : "");
     d.title = "Question " + (i + 1);
-    d.onclick = () => { cur = i; render(); };
+    d.onclick = () => { if (i !== cur) go("test.html?q=" + (i + 1)); };
     dots.appendChild(d);
   });
 }
 
+/* Every Next / Back click loads a new URL (?q=2, ?q=3 ...) so each question is its own page view. */
 function next() {
   if (answers[cur] === null) return;
-  if (cur === QUESTIONS.length - 1) finish(false); else { cur++; render(); }
+  if (cur === QUESTIONS.length - 1) go("calculating.html"); else go("test.html?q=" + (cur + 2));
 }
-function prev() { if (cur > 0) { cur--; render(); } }
+function prev() { if (cur > 0) go("test.html?q=" + cur); }
 
 /* ---------- Scoring ---------- */
 function estimateIQ(correct) { return Math.round(70 + 3.25 * correct); }
@@ -225,18 +257,30 @@ function tier(iq) {
   return { name: "Developing", text: "Below 90 on this short test. Practice puzzles and review the explanations to improve." };
 }
 
-function finish(timeUp) {
-  if (finished) return;
-  finished = true;
-  clearInterval(timer);
-  const used = Math.min(TOTAL_SECONDS, Math.round(TOTAL_SECONDS - Math.max(0, (endTime - Date.now()) / 1000)));
+/* ---------- "Calculating" page (calculating.html) ---------- */
+function initCalc() {
+  if (!load()) { location.replace("test.html"); return; }
+  if (finTime) { location.replace("result.html"); return; }
+  const steps = ["Checking your answers...", "Comparing patterns and logic...", "Estimating your IQ score...", "Almost ready..."];
+  const total = 4800, t0 = Date.now();
+  const iv = setInterval(() => {
+    const p = Math.min(1, (Date.now() - t0) / total);
+    $("calcbar").style.width = (p * 100) + "%";
+    $("calcstep").textContent = steps[Math.min(steps.length - 1, Math.floor(p * steps.length))];
+    if (p >= 1) { clearInterval(iv); finTime = Date.now(); save(); location.replace("result.html"); }
+  }, 100);
+}
+
+/* ---------- Result page (result.html) ---------- */
+function initResult() {
+  if (!load()) { location.replace("test.html"); return; }
+  if (!finTime) { location.replace("calculating.html"); return; }
+  const used = Math.max(0, Math.min(TOTAL_SECONDS, Math.round((Math.min(finTime, endTime) - (endTime - TOTAL_SECONDS * 1000)) / 1000)));
   const by = { math: [0, 0], logic: [0, 0], visual: [0, 0] };
   let correct = 0;
   QUESTIONS.forEach((q, i) => { by[q.c][1]++; if (answers[i] === q.a) { correct++; by[q.c][0]++; } });
   const iq = estimateIQ(correct), t = tier(iq);
 
-  $("quiz").classList.add("hidden");
-  $("result").classList.remove("hidden");
   $("timeup").classList.toggle("hidden", !timeUp);
   $("iq").textContent = iq;
   $("band").textContent = t.name;
@@ -262,7 +306,10 @@ function finish(timeUp) {
       (ok ? "" : " | correct: " + show(item.a)) + "<br><small>" + esc(item.e) + "</small>";
     rev.appendChild(d);
   });
-  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-function retake() { location.reload(); }
+function retake() { clearState(); go("test.html"); }
+
+if (PAGE === "test") initTest();
+else if (PAGE === "calc") initCalc();
+else if (PAGE === "result") initResult();

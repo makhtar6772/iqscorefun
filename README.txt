@@ -5,3 +5,8 @@ FAVICON: favicon.ico, favicon-16x16.png, favicon-32x32.png, apple-touch-icon.png
 2. Host on any static host (Cloudflare Pages, Netlify, GitHub Pages - all free) and connect your domain.
 3. Apply for Google AdSense. When approved, paste the AdSense script in the <head> marked in each page and ad units in the 'AD SLOT' spots. Update ads.txt.
 4. Add Google Search Console and submit sitemap.xml.
+
+UPDATE (Nov 2026)
+- Quiz flow: test.html -> test.html?q=1 ... ?q=20 -> calculating.html (5 sec) -> result.html. Answers/score live in sessionStorage.
+- analytics.js: paste your Google Analytics 4 ID (G-XXXXXXXXXX). ?src=worker1 is saved for the whole visit (custom param "worker_src").
+- Publytics removed. Monetag tag + sw.js (root) are in every page <head>.
