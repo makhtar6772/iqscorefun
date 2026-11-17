@@ -4,7 +4,7 @@
       The src value is kept in sessionStorage so it stays attached to every page the visitor opens
       (test.html?q=1 ... result.html), even though ?src= is no longer in the URL. */
 (function () {
-  var GA_ID = "G-XXXXXXXXXX";   /* <-- PASTE YOUR GA4 MEASUREMENT ID HERE */
+  var GA_ID = "G-ERN1G1R7LV";   /* <-- PASTE YOUR GA4 MEASUREMENT ID HERE */
 
   var src = "";
   try {
